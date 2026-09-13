@@ -164,8 +164,8 @@ with col2:
     
     family_size = st.slider("Portion Allocation (Servings):", min_value=1, max_value=6, value=2)
     
-    #st.markdown("### 📡 AI Engine Modules")
-    #allow_missing = st.checkbox("Enable 1-Ingredient Smart Fill Suggestion", value=True)
+    st.markdown("### 📡 AI Engine Modules")
+    allow_missing = st.checkbox("Enable 1-Ingredient Smart Fill Suggestion", value=True)
 
 st.divider()
 
