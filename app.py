@@ -211,13 +211,13 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
         try:
             if input_method == "Fridge Vision Scanner" and uploaded_image:
                 response = client.models.generate_content(
-                    model='gemini-2.5-flash',
+                    model='gemini-3.6-flash',
                     contents=[uploaded_image, system_instruction + "\nFirst, identify the leftover ingredients in the photo, then build the recipe."]
                 )
             else:
                 prompt = f"{system_instruction}\nLeftover Ingredients Provided: {ingredients_text}"
                 response = client.models.generate_content(
-                    model='gemini-2.5-flash',
+                    model='gemini-3.6-flash',
                     contents=prompt
                 )
             
