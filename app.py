@@ -9,20 +9,10 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Universal Mobile & Desktop Responsive CSS
+# 2. Responsive UI Styling
 st.markdown("""
     <style>
-    /* Global Background & Dark-Mode Text Fix */
-    html, body, [data-testid="stAppViewContainer"] {
-        background-color: #f8faf9 !important;
-        color: #0f172a !important;
-    }
-    
-    [data-testid="stHeader"] {
-        background-color: rgba(248, 250, 249, 0.8) !important;
-    }
-
-    /* Hero Banner (Scales Text for Mobile Screens) */
+    /* Hero Banner */
     .hero-banner {
         background: linear-gradient(135deg, #0d5c46 0%, #11998e 50%, #38ef7d 100%);
         padding: 24px 16px;
@@ -44,9 +34,9 @@ st.markdown("""
         margin: 0;
     }
 
-    /* Metric Cards (Adapts Fluidly to Grid Screens) */
+    /* Modern Metric Cards */
     .metric-card {
-        background: #ffffff !important;
+        background: #ffffff;
         padding: 16px 12px;
         border-radius: 14px;
         text-align: center;
@@ -56,23 +46,14 @@ st.markdown("""
     }
     .metric-card h3 {
         margin: 0;
-        color: #0d5c46 !important;
+        color: #0d5c46;
         font-size: clamp(1.1rem, 3vw, 1.35rem);
         font-weight: 700;
     }
     .metric-card p {
         margin: 4px 0 0 0;
-        color: #64748b !important;
+        color: #64748b;
         font-size: 0.8rem;
-    }
-
-    /* Ensure Clear Text Contrast on All Mobile Webkit Browsers */
-    label, .stMarkdown, p, span, div, h3 {
-        color: #0f172a !important;
-    }
-    
-    h3 {
-        font-weight: 700 !important;
     }
 
     /* Primary Action Button */
@@ -139,7 +120,7 @@ with col1:
     uploaded_image = None
 
     if input_method == "Interactive Pantry Drawers":
-        st.caption("Select available ingredients from the drawers below:")
+        st.caption("Select available ingredients from the options below:")
         
         veg = st.multiselect("🥦 Fresh Produce & Greens:", ["Spinach", "Tomatoes", "Onions", "Bell Peppers", "Carrots", "Broccoli", "Garlic", "Cucumber", "Zucchini"])
         grains = st.multiselect("🌾 Grains, Staples & Bakery:", ["Cooked Rice", "Pasta / Noodles", "Bread", "Oats", "Quinoa", "Flour"])
