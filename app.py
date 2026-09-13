@@ -9,10 +9,12 @@ st.set_page_config(
     layout="wide"
 )
 
+# Global Variables Initialization (Prevents NameError crashes)
+allow_missing = False
+
 # 2. Responsive UI Styling
 st.markdown("""
     <style>
-    /* Hero Banner */
     .hero-banner {
         background: linear-gradient(135deg, #0d5c46 0%, #11998e 50%, #38ef7d 100%);
         padding: 24px 16px;
@@ -33,8 +35,6 @@ st.markdown("""
         font-size: clamp(0.85rem, 2.5vw, 1.1rem);
         margin: 0;
     }
-
-    /* Modern Metric Cards */
     .metric-card {
         background: #ffffff;
         padding: 16px 12px;
@@ -55,8 +55,6 @@ st.markdown("""
         color: #64748b;
         font-size: 0.8rem;
     }
-
-    /* Primary Action Button */
     .stButton>button {
         width: 100%;
         background: linear-gradient(90deg, #0d5c46 0%, #11998e 100%);
@@ -163,9 +161,6 @@ with col2:
     )
     
     family_size = st.slider("Portion Allocation (Servings):", min_value=1, max_value=6, value=2)
-    
-    st.markdown("### 📡 AI Engine Modules")
-    allow_missing = st.checkbox("Enable 1-Ingredient Smart Fill Suggestion", value=True)
 
 st.divider()
 
@@ -178,13 +173,12 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
     with st.spinner("Synthesizing low-GI culinary plan & waste mitigation data..."):
         system_instruction = f"""
         You are an elite nutritionist and zero-waste chef expert.
-        Generate a delicious, healthy, low-waste recipe based on leftover ingredients.
+        Generate a delicious, healthy, low-waste recipe based ONLY on the provided leftover ingredients.
         
         User Rules:
         - Health Profile: {health_profile}
         - Servings Required: {family_size}
         - Expiring Priority Ingredients: {expiring_items}
-        - Allow Suggesting 1 Missing Core Ingredient: {allow_missing}
         
         If Diabetic/Blood-Sugar Friendly mode is selected:
         1. Prioritize low glycemic index (GI) foods.
@@ -198,8 +192,6 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
         
         ### 🛒 Ingredients Required (Using Leftovers First)
         - [List items]
-        {'### 💡 Recommended 1 Missing Ingredient to Buy' if allow_missing else ''}
-        {'- [Optional 1 missing item]' if allow_missing else ''}
         
         ### 🍳 Step-by-Step Instructions
         1. [Step 1]
@@ -219,13 +211,13 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
         try:
             if input_method == "Fridge Vision Scanner" and uploaded_image:
                 response = client.models.generate_content(
-                    model='gemini-3.6-flash',
+                    model='gemini-2.5-flash',
                     contents=[uploaded_image, system_instruction + "\nFirst, identify the leftover ingredients in the photo, then build the recipe."]
                 )
             else:
                 prompt = f"{system_instruction}\nLeftover Ingredients Provided: {ingredients_text}"
                 response = client.models.generate_content(
-                    model='gemini-3.6-flash',
+                    model='gemini-2.5-flash',
                     contents=prompt
                 )
             
