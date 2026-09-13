@@ -9,85 +9,88 @@ st.set_page_config(
     layout="wide"
 )
 
-# 2. Custom CSS Styling (Elevated Aesthetics)
+# 2. Universal Mobile & Desktop Responsive CSS
 st.markdown("""
     <style>
-    /* App Canvas */
-    .stApp {
-        background-color: #f4f8f6;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    /* Global Background & Dark-Mode Text Fix */
+    html, body, [data-testid="stAppViewContainer"] {
+        background-color: #f8faf9 !important;
+        color: #0f172a !important;
     }
     
-    /* Hero Banner */
+    [data-testid="stHeader"] {
+        background-color: rgba(248, 250, 249, 0.8) !important;
+    }
+
+    /* Hero Banner (Scales Text for Mobile Screens) */
     .hero-banner {
         background: linear-gradient(135deg, #0d5c46 0%, #11998e 50%, #38ef7d 100%);
-        padding: 32px 20px;
-        border-radius: 20px;
-        color: white;
+        padding: 24px 16px;
+        border-radius: 18px;
+        color: #ffffff !important;
         text-align: center;
-        margin-bottom: 25px;
-        box-shadow: 0 10px 25px rgba(17, 153, 142, 0.2);
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px rgba(17, 153, 142, 0.2);
     }
     .hero-banner h1 {
         color: #ffffff !important;
         font-weight: 800;
-        letter-spacing: -0.5px;
-        margin-bottom: 8px;
+        font-size: clamp(1.5rem, 4vw, 2.5rem);
+        margin-bottom: 6px;
     }
     .hero-banner p {
-        font-size: 1.15rem;
-        opacity: 0.92;
+        color: #f0fdf4 !important;
+        font-size: clamp(0.85rem, 2.5vw, 1.1rem);
         margin: 0;
     }
 
-    /* Modern Impact Cards */
+    /* Metric Cards (Adapts Fluidly to Grid Screens) */
     .metric-card {
-        background: #ffffff;
-        padding: 20px 15px;
-        border-radius: 16px;
+        background: #ffffff !important;
+        padding: 16px 12px;
+        border-radius: 14px;
         text-align: center;
-        border: 1px solid #e1ece6;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-        transition: transform 0.2s ease;
-    }
-    .metric-card:hover {
-        transform: translateY(-2px);
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        margin-bottom: 10px;
     }
     .metric-card h3 {
         margin: 0;
-        color: #0d5c46;
-        font-size: 1.4rem;
+        color: #0d5c46 !important;
+        font-size: clamp(1.1rem, 3vw, 1.35rem);
         font-weight: 700;
     }
     .metric-card p {
         margin: 4px 0 0 0;
-        color: #617d72;
-        font-size: 0.85rem;
-        font-weight: 500;
+        color: #64748b !important;
+        font-size: 0.8rem;
+    }
+
+    /* Ensure Clear Text Contrast on All Mobile Webkit Browsers */
+    label, .stMarkdown, p, span, div, h3 {
+        color: #0f172a !important;
+    }
+    
+    h3 {
+        font-weight: 700 !important;
     }
 
     /* Primary Action Button */
     .stButton>button {
         width: 100%;
         background: linear-gradient(90deg, #0d5c46 0%, #11998e 100%);
-        color: white !important;
-        font-size: 1.25rem;
+        color: #ffffff !important;
+        font-size: 1.15rem;
         font-weight: 700;
-        border-radius: 14px;
-        padding: 14px 28px;
+        border-radius: 12px;
+        padding: 12px 20px;
         border: none;
-        box-shadow: 0 6px 18px rgba(13, 92, 70, 0.25);
+        box-shadow: 0 4px 14px rgba(13, 92, 70, 0.25);
         transition: all 0.3s ease;
     }
     .stButton>button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 22px rgba(13, 92, 70, 0.35);
-    }
-
-    /* Section Styling */
-    h3 {
-        color: #0d5c46 !important;
-        font-weight: 700 !important;
+        box-shadow: 0 6px 18px rgba(13, 92, 70, 0.35);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -113,7 +116,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 5. Impact Metrics Header
-m1, m2, m3 = st.columns(3)
+m1, m2, m3 = st.columns([1, 1, 1])
 with m1:
     st.markdown("""<div class="metric-card"><h3>🌐 SDG 3 & 12</h3><p>Aligned Global Goals</p></div>""", unsafe_allow_html=True)
 with m2:
@@ -121,7 +124,6 @@ with m2:
 with m3:
     st.markdown("""<div class="metric-card"><h3>🍃 ~1.2 kg CO₂e</h3><p>Average Footprint Reduction</p></div>""", unsafe_allow_html=True)
 
-st.write("")
 st.write("")
 
 # 6. Main Interface Layout
@@ -137,59 +139,20 @@ with col1:
     uploaded_image = None
 
     if input_method == "Interactive Pantry Drawers":
-        st.caption("Expand drawers below to toggle available household ingredients:")
+        st.caption("Select available ingredients from the drawers below:")
         
-        with st.expander("🥦 Fresh Produce & Greens", expanded=True):
-            c1, c2, c3 = st.columns(3)
-            if c1.checkbox("Spinach"): selected_ingredients.append("Spinach")
-            if c1.checkbox("Tomatoes"): selected_ingredients.append("Tomatoes")
-            if c1.checkbox("Onions"): selected_ingredients.append("Onions")
-            if c2.checkbox("Bell Peppers"): selected_ingredients.append("Bell Peppers")
-            if c2.checkbox("Carrots"): selected_ingredients.append("Carrots")
-            if c2.checkbox("Broccoli"): selected_ingredients.append("Broccoli")
-            if c3.checkbox("Garlic"): selected_ingredients.append("Garlic")
-            if c3.checkbox("Cucumber"): selected_ingredients.append("Cucumber")
-            if c3.checkbox("Zucchini"): selected_ingredients.append("Zucchini")
-
-        with st.expander("🌾 Grains, Staples & Bakery"):
-            c1, c2, c3 = st.columns(3)
-            if c1.checkbox("Cooked Rice"): selected_ingredients.append("Cooked Rice")
-            if c1.checkbox("Pasta / Noodles"): selected_ingredients.append("Pasta")
-            if c2.checkbox("Bread"): selected_ingredients.append("Bread")
-            if c2.checkbox("Oats"): selected_ingredients.append("Oats")
-            if c3.checkbox("Quinoa"): selected_ingredients.append("Quinoa")
-            if c3.checkbox("Flour"): selected_ingredients.append("Flour")
-
-        with st.expander("🍗 Proteins, Meat & Seafood"):
-            c1, c2, c3 = st.columns(3)
-            if c1.checkbox("Cooked Chicken"): selected_ingredients.append("Cooked Chicken")
-            if c1.checkbox("Ground Beef"): selected_ingredients.append("Ground Beef")
-            if c2.checkbox("Canned Tuna"): selected_ingredients.append("Canned Tuna")
-            if c2.checkbox("Salmon"): selected_ingredients.append("Salmon")
-            if c3.checkbox("Eggs"): selected_ingredients.append("Eggs")
-            if c3.checkbox("Shrimp"): selected_ingredients.append("Shrimp")
-
-        with st.expander("🧀 Dairy, Cheese & Alternatives"):
-            c1, c2, c3 = st.columns(3)
-            if c1.checkbox("Milk"): selected_ingredients.append("Milk")
-            if c1.checkbox("Greek Yogurt"): selected_ingredients.append("Greek Yogurt")
-            if c2.checkbox("Cheddar / Cheese"): selected_ingredients.append("Cheese")
-            if c2.checkbox("Butter"): selected_ingredients.append("Butter")
-            if c3.checkbox("Tofu"): selected_ingredients.append("Tofu")
-            if c3.checkbox("Heavy Cream"): selected_ingredients.append("Heavy Cream")
-
-        with st.expander("🥫 Legumes, Spices & Pantry Goods"):
-            c1, c2, c3 = st.columns(3)
-            if c1.checkbox("Canned Chickpeas"): selected_ingredients.append("Chickpeas")
-            if c1.checkbox("Lentils"): selected_ingredients.append("Lentils")
-            if c2.checkbox("Olive Oil"): selected_ingredients.append("Olive Oil")
-            if c2.checkbox("Soy Sauce"): selected_ingredients.append("Soy Sauce")
-            if c3.checkbox("Mushrooms"): selected_ingredients.append("Mushrooms")
-            if c3.checkbox("Tomato Paste"): selected_ingredients.append("Tomato Paste")
-
+        veg = st.multiselect("🥦 Fresh Produce & Greens:", ["Spinach", "Tomatoes", "Onions", "Bell Peppers", "Carrots", "Broccoli", "Garlic", "Cucumber", "Zucchini"])
+        grains = st.multiselect("🌾 Grains, Staples & Bakery:", ["Cooked Rice", "Pasta / Noodles", "Bread", "Oats", "Quinoa", "Flour"])
+        protein = st.multiselect("🍗 Proteins, Meat & Seafood:", ["Cooked Chicken", "Ground Beef", "Canned Tuna", "Salmon", "Eggs", "Shrimp"])
+        dairy = st.multiselect("🧀 Dairy, Cheese & Alternatives:", ["Milk", "Greek Yogurt", "Cheddar / Cheese", "Butter", "Tofu", "Heavy Cream"])
+        pantry = st.multiselect("🥫 Legumes, Spices & Pantry Goods:", ["Canned Chickpeas", "Lentils", "Olive Oil", "Soy Sauce", "Mushrooms", "Tomato Paste"])
+        
         extra_text = st.text_input("✍️ Additional items (comma-separated):", placeholder="e.g., half lemon, fresh basil")
         
-        all_items = selected_ingredients + ([extra_text] if extra_text else [])
+        all_items = veg + grains + protein + dairy + pantry
+        if extra_text:
+            all_items.extend([item.strip() for item in extra_text.split(",") if item.strip()])
+            
         ingredients_text = ", ".join(all_items)
         
         if ingredients_text:
@@ -227,7 +190,7 @@ st.divider()
 
 # 7. Execution Logic
 if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
-    if input_method == "Interactive Pantry Radar" and not ingredients_text:
+    if input_method == "Interactive Pantry Drawers" and not ingredients_text:
         st.warning("Please select or specify at least one ingredient to proceed.")
         st.stop()
         
