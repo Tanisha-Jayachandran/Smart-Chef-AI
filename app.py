@@ -108,16 +108,16 @@ client = genai.Client(api_key=api_key)
 st.markdown("""
     <div class="hero-banner">
         <h1>🥑 SmartChef AI</h1>
-        <p>Precision Culinary Intelligence • SDG 3 Good Health & SDG 12 Responsible Consumption</p>
+        <p>Interactive Leftover Recipe & Health Engine | Supporting SDG 3 & SDG 12</p>
     </div>
 """, unsafe_allow_html=True)
 
 # 5. Impact Metrics Header
 m1, m2, m3 = st.columns(3)
 with m1:
-    st.markdown("""<div class="metric-card"><h3>🌐 SDG 3 & 12</h3><p>Target Framework Alignment</p></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="metric-card"><h3>🌐 SDG 3 & 12</h3><p>Aligned Global Goals</p></div>""", unsafe_allow_html=True)
 with m2:
-    st.markdown("""<div class="metric-card"><h3>⚖️ ~400g / Meal</h3><p>Benchmark Landfill Diversion</p></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="metric-card"><h3>⚖️ ~400g / Meal</h3><p>Avg Benchmark Waste Saved</p></div>""", unsafe_allow_html=True)
 with m3:
     st.markdown("""<div class="metric-card"><h3>🍃 ~1.2 kg CO₂e</h3><p>Average Footprint Reduction</p></div>""", unsafe_allow_html=True)
 
@@ -128,15 +128,15 @@ st.write("")
 col1, col2 = st.columns([1.3, 0.7], gap="large")
 
 with col1:
-    st.markdown("### 🧺 1. Ingredient Input Matrix")
+    st.markdown("### 🧺 1. Smart Ingredient Selector")
     
-    input_method = st.radio("Choose Input Pipeline:", ["Interactive Pantry Radar", "Fridge Vision Scanner"], horizontal=True)
+    input_method = st.radio("Choose Input Pipeline:", ["Interactive Pantry Drawers", "Fridge Vision Scanner"], horizontal=True)
     
     selected_ingredients = []
     ingredients_text = ""
     uploaded_image = None
 
-    if input_method == "Interactive Pantry Radar":
+    if input_method == "Interactive Pantry Drawers":
         st.caption("Expand drawers below to toggle available household ingredients:")
         
         with st.expander("🥦 Fresh Produce & Greens", expanded=True):
@@ -201,7 +201,7 @@ with col1:
             uploaded_image = Image.open(uploaded_file)
             st.image(uploaded_image, caption="Vision Stream Feed", use_container_width=True)
 
-    st.markdown("### 🛰️ Expiration Radar")
+    st.markdown("### 🛰️ Pantry Expiration Radar")
     expiring_items = st.text_input("Items reaching end-of-life TODAY/TOMORROW:", placeholder="e.g., open yogurt, fresh spinach")
 
 with col2:
@@ -220,8 +220,8 @@ with col2:
     
     family_size = st.slider("Portion Allocation (Servings):", min_value=1, max_value=6, value=2)
     
-    st.markdown("### 📡 AI Engine Modules")
-    allow_missing = st.checkbox("Enable 1-Ingredient Smart Fill Suggestion", value=True)
+    #st.markdown("### 📡 AI Engine Modules")
+    #allow_missing = st.checkbox("Enable 1-Ingredient Smart Fill Suggestion", value=True)
 
 st.divider()
 
