@@ -229,9 +229,9 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
         ---
         """
         
-        # Helper function to try generation with model fallbacks
+        # Fallback executor with supported Gemini models
         def generate_with_fallback(contents_payload):
-            models_to_try = ['gemini-3.6-flash', 'gemini-2.5-flash']
+            models_to_try = ['gemini-2.0-flash', 'gemini-1.5-flash']
             for model_name in models_to_try:
                 try:
                     return client.models.generate_content(
@@ -240,7 +240,7 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
                     )
                 except Exception as e:
                     if "503" in str(e) or "UNAVAILABLE" in str(e):
-                        continue # Try next fallback model on server load
+                        continue 
                     raise e
             raise Exception("All AI model endpoints are currently undergoing maintenance. Please try again in a moment.")
 
