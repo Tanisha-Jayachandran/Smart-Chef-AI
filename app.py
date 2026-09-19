@@ -1,5 +1,6 @@
 import streamlit as st
 from google import genai
+from google.genai import types  # <--- ADD THIS IMPORT
 from PIL import Image
 
 # 1. Page Configuration
@@ -142,17 +143,22 @@ with col1:
         if ingredients_text:
             st.success(f"Active Pantry Payload ({len(all_items)} items): **{ingredients_text}**")
 
-    elif input_method == "Fridge Vision Scanner":
-        uploaded_file = st.file_uploader("📸 Upload clear image of fridge shelf:", type=["jpg", "png", "jpeg"])
-        if uploaded_file:
-            uploaded_image = Image.open(uploaded_file)
-            st.image(uploaded_image, caption="Vision Stream Feed", use_container_width=True)
-
-    elif input_method == "🎙️ Voice Pantry Assistant":
-        st.caption("Press the microphone icon below and speak your leftover ingredients out loud:")
-        audio_file = st.audio_input("Record your leftover ingredients")
-        if audio_file:
-            st.success("🎤 Audio recorded! Click 'Generate Culinary & Health Analysis' below to proceed.")
+    elif input_method == "🎙️ Voice Pantry Assistant" and audio_file:
+                audio_bytes = audio_file.read()
+                
+                # Format the audio input using official types.Part.from_bytes
+                audio_part = types.Part.from_bytes(
+                    data=audio_bytes,
+                    mime_type=audio_file.type or "audio/wav"
+                )
+                
+                response = client.models.generate_content(
+                    model='gemini-3.6-flash',
+                    contents=[
+                        audio_part,
+                        system_instruction + "\nListen to the audio recording to extract all mentioned ingredients, then generate the recipe."
+                    ]
+                )
 
     st.markdown("### 🛰️ Pantry Expiration Radar")
     expiring_items = st.text_input("Items reaching end-of-life TODAY/TOMORROW:", placeholder="e.g., open yogurt, fresh spinach")
@@ -236,10 +242,16 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
                 )
             elif input_method == "🎙️ Voice Pantry Assistant" and audio_file:
                 audio_bytes = audio_file.read()
+                
+                audio_part = types.Part.from_bytes(
+                    data=audio_bytes,
+                    mime_type=audio_file.type or "audio/wav"
+                )
+                
                 response = client.models.generate_content(
                     model='gemini-3.6-flash',
                     contents=[
-                        {"mime_type": "audio/wav", "data": audio_bytes},
+                        audio_part,
                         system_instruction + "\nListen to the audio recording to extract all mentioned ingredients, then generate the recipe."
                     ]
                 )
@@ -252,6 +264,9 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
             
             st.success("Analysis Complete!")
             st.markdown(response.text)
+            
+        except Exception as e:
+            st.error(f"Execution Error: {str(e)}")
             
         except Exception as e:
             st.error(f"Execution Error: {str(e)}")
