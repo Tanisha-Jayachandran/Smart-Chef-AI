@@ -111,11 +111,16 @@ col1, col2 = st.columns([1.3, 0.7], gap="large")
 with col1:
     st.markdown("### 🧺 1. Smart Ingredient Selector")
     
-    input_method = st.radio("Choose Input Pipeline:", ["Interactive Pantry Drawers", "Fridge Vision Scanner"], horizontal=True)
+    input_method = st.radio(
+        "Choose Input Pipeline:", 
+        ["Interactive Pantry Drawers", "Fridge Vision Scanner", "🎙️ Voice Pantry Assistant"], 
+        horizontal=True
+    )
     
     selected_ingredients = []
     ingredients_text = ""
     uploaded_image = None
+    audio_file = None
 
     if input_method == "Interactive Pantry Drawers":
         st.caption("Select available ingredients from the options below:")
@@ -137,14 +142,23 @@ with col1:
         if ingredients_text:
             st.success(f"Active Pantry Payload ({len(all_items)} items): **{ingredients_text}**")
 
-    else:
+    elif input_method == "Fridge Vision Scanner":
         uploaded_file = st.file_uploader("📸 Upload clear image of fridge shelf:", type=["jpg", "png", "jpeg"])
         if uploaded_file:
             uploaded_image = Image.open(uploaded_file)
             st.image(uploaded_image, caption="Vision Stream Feed", use_container_width=True)
 
+    elif input_method == "🎙️ Voice Pantry Assistant":
+        st.caption("Press the microphone icon below and speak your leftover ingredients out loud:")
+        audio_file = st.audio_input("Record your leftover ingredients")
+        if audio_file:
+            st.success("🎤 Audio recorded! Click 'Generate Culinary & Health Analysis' below to proceed.")
+
     st.markdown("### 🛰️ Pantry Expiration Radar")
     expiring_items = st.text_input("Items reaching end-of-life TODAY/TOMORROW:", placeholder="e.g., open yogurt, fresh spinach")
+    
+    if expiring_items:
+        st.warning(f"🚨 **Expiration Risk Alert:** System will prioritize using: **{expiring_items}**")
 
 with col2:
     st.markdown("### 🧪 2. Health & Target Profile")
@@ -168,6 +182,12 @@ st.divider()
 if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
     if input_method == "Interactive Pantry Drawers" and not ingredients_text:
         st.warning("Please select or specify at least one ingredient to proceed.")
+        st.stop()
+    elif input_method == "Fridge Vision Scanner" and not uploaded_image:
+        st.warning("Please upload a fridge image to proceed.")
+        st.stop()
+    elif input_method == "🎙️ Voice Pantry Assistant" and not audio_file:
+        st.warning("Please record a voice input to proceed.")
         st.stop()
         
     with st.spinner("Synthesizing low-GI culinary plan & waste mitigation data..."):
@@ -213,6 +233,15 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
                 response = client.models.generate_content(
                     model='gemini-3.6-flash',
                     contents=[uploaded_image, system_instruction + "\nFirst, identify the leftover ingredients in the photo, then build the recipe."]
+                )
+            elif input_method == "🎙️ Voice Pantry Assistant" and audio_file:
+                audio_bytes = audio_file.read()
+                response = client.models.generate_content(
+                    model='gemini-3.6-flash',
+                    contents=[
+                        {"mime_type": "audio/wav", "data": audio_bytes},
+                        system_instruction + "\nListen to the audio recording to extract all mentioned ingredients, then generate the recipe."
+                    ]
                 )
             else:
                 prompt = f"{system_instruction}\nLeftover Ingredients Provided: {ingredients_text}"
