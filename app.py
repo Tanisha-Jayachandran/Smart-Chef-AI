@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 from google import genai
 from google.genai import types
@@ -229,24 +230,20 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
         ---
         """
         
-        # Primary model with valid fallback targets
-        def generate_with_fallback(contents_payload):
-            models_to_try = ['gemini-3.6-flash', 'gemini-2.5-flash']
-            
-            last_exception = None
-            for model_name in models_to_try:
+        # Robust execution function using retries for gemini-3.6-flash
+        def generate_with_retries(contents_payload, max_attempts=3):
+            for attempt in range(1, max_attempts + 1):
                 try:
                     return client.models.generate_content(
-                        model=model_name,
+                        model='gemini-3.6-flash',
                         contents=contents_payload
                     )
                 except Exception as e:
-                    last_exception = e
-                    # Continue loop if service is temporarily unavailable or model not found
-                    if any(err_code in str(e) for err_code in ["503", "UNAVAILABLE", "404", "NOT_FOUND"]):
-                        continue 
+                    # If server is overloaded (503 / UNAVAILABLE), pause briefly and retry
+                    if any(err_code in str(e) for err_code in ["503", "UNAVAILABLE"]) and attempt < max_attempts:
+                        time.sleep(2)
+                        continue
                     raise e
-            raise last_exception if last_exception else Exception("Execution failed across all available endpoints.")
 
         try:
             if input_method == "Fridge Vision Scanner" and uploaded_image:
@@ -264,7 +261,7 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
             else:
                 payload = f"{system_instruction}\nLeftover Ingredients Provided: {ingredients_text}"
 
-            response = generate_with_fallback(payload)
+            response = generate_with_retries(payload)
             
             st.success("Analysis Complete!")
             st.markdown(response.text)
