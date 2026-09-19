@@ -229,33 +229,38 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
         ---
         """
         
+        # Helper function to try generation with model fallbacks
+        def generate_with_fallback(contents_payload):
+            models_to_try = ['gemini-3.6-flash', 'gemini-2.5-flash']
+            for model_name in models_to_try:
+                try:
+                    return client.models.generate_content(
+                        model=model_name,
+                        contents=contents_payload
+                    )
+                except Exception as e:
+                    if "503" in str(e) or "UNAVAILABLE" in str(e):
+                        continue # Try next fallback model on server load
+                    raise e
+            raise Exception("All AI model endpoints are currently undergoing maintenance. Please try again in a moment.")
+
         try:
             if input_method == "Fridge Vision Scanner" and uploaded_image:
-                response = client.models.generate_content(
-                    model='gemini-3.6-flash',
-                    contents=[uploaded_image, system_instruction + "\nFirst, identify the leftover ingredients in the photo, then build the recipe."]
-                )
+                payload = [uploaded_image, system_instruction + "\nFirst, identify the leftover ingredients in the photo, then build the recipe."]
             elif input_method == "Voice Pantry Assistant" and audio_file:
                 audio_bytes = audio_file.read()
-                
                 audio_part = types.Part.from_bytes(
                     data=audio_bytes,
                     mime_type=audio_file.type or "audio/wav"
                 )
-                
-                response = client.models.generate_content(
-                    model='gemini-3.6-flash',
-                    contents=[
-                        audio_part,
-                        system_instruction + "\nListen to the audio recording to extract all mentioned ingredients, then generate the recipe."
-                    ]
-                )
+                payload = [
+                    audio_part,
+                    system_instruction + "\nListen to the audio recording to extract all mentioned ingredients, then generate the recipe."
+                ]
             else:
-                prompt = f"{system_instruction}\nLeftover Ingredients Provided: {ingredients_text}"
-                response = client.models.generate_content(
-                    model='gemini-3.6-flash',
-                    contents=prompt
-                )
+                payload = f"{system_instruction}\nLeftover Ingredients Provided: {ingredients_text}"
+
+            response = generate_with_fallback(payload)
             
             st.success("Analysis Complete!")
             st.markdown(response.text)
