@@ -10,7 +10,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Global Variables Initialization (Prevents NameError crashes)
+# Global Variables Initialization
 allow_missing = False
 
 # 2. Responsive UI Styling
@@ -229,9 +229,11 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
         ---
         """
         
-        # Fallback executor with supported Gemini models
+        # Primary model with valid fallback targets
         def generate_with_fallback(contents_payload):
-            models_to_try = ['gemini-2.0-flash', 'gemini-1.5-flash']
+            models_to_try = ['gemini-3.6-flash', 'gemini-2.5-flash']
+            
+            last_exception = None
             for model_name in models_to_try:
                 try:
                     return client.models.generate_content(
@@ -239,10 +241,12 @@ if st.button("🔮 Generate Culinary & Health Analysis", type="primary"):
                         contents=contents_payload
                     )
                 except Exception as e:
-                    if "503" in str(e) or "UNAVAILABLE" in str(e):
+                    last_exception = e
+                    # Continue loop if service is temporarily unavailable or model not found
+                    if any(err_code in str(e) for err_code in ["503", "UNAVAILABLE", "404", "NOT_FOUND"]):
                         continue 
                     raise e
-            raise Exception("All AI model endpoints are currently undergoing maintenance. Please try again in a moment.")
+            raise last_exception if last_exception else Exception("Execution failed across all available endpoints.")
 
         try:
             if input_method == "Fridge Vision Scanner" and uploaded_image:
